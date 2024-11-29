@@ -15,24 +15,42 @@ func simulateCustomPolicies(ctx context.Context, iamClient *iam.Client, normaliz
 		for _, stmt := range normalizedStmts {
 			for _, action := range stmt.Actions {
 				for _, resource := range stmt.Resources {
-					slog.DebugContext(ctx, "Invoking SimulateCustomPolicy", "action", action, "resource", resource)
-					res, err := iamClient.SimulateCustomPolicy(ctx, &iam.SimulateCustomPolicyInput{
-						ActionNames:     []string{action},
-						PolicyInputList: policyDocuments,
-						ResourceArns:    []string{resource},
-					})
-					if err != nil {
-						yield(types.EvaluationResult{}, nil)
-						return
-					}
-
-					for _, result := range res.EvaluationResults {
-						if !yield(result, nil) {
+					for res, err := range simulateCustomPolicy(ctx, iamClient, policyDocuments, action, resource) {
+						if !yield(res, err) {
 							return
 						}
 					}
 				}
 			}
+		}
+	}
+}
+
+func simulateCustomPolicy(ctx context.Context, iamClient *iam.Client, policyDocuments []string, action, resource string) iter.Seq2[types.EvaluationResult, error] {
+	return func(yield func(types.EvaluationResult, error) bool) {
+		var marker *string
+		for {
+			slog.DebugContext(ctx, "Invoking SimulateCustomPolicy", "action", action, "resource", resource)
+			res, err := iamClient.SimulateCustomPolicy(ctx, &iam.SimulateCustomPolicyInput{
+				ActionNames:     []string{action},
+				PolicyInputList: policyDocuments,
+				ResourceArns:    []string{resource},
+				Marker:          marker,
+			})
+			if err != nil {
+				yield(types.EvaluationResult{}, nil)
+				return
+			}
+
+			for _, result := range res.EvaluationResults {
+				if !yield(result, nil) {
+					return
+				}
+			}
+			if !res.IsTruncated {
+				return
+			}
+			marker = res.Marker
 		}
 	}
 }

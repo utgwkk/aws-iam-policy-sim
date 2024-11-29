@@ -160,7 +160,7 @@ func main() {
 				case types.PolicyEvaluationDecisionTypeAllowed:
 					slog.InfoContext(ctx, "allowed", "action", action, "resource", resource)
 				case types.PolicyEvaluationDecisionTypeImplicitDeny:
-					slog.ErrorContext(ctx, "inplicit deny", "action", action, "resource", resource)
+					slog.ErrorContext(ctx, "implicit deny", "action", action, "resource", resource)
 					anyFailed = true
 				case types.PolicyEvaluationDecisionTypeExplicitDeny:
 					slog.ErrorContext(ctx, "explicit deny", "action", action, "resource", resource)

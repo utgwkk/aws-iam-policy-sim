@@ -59,7 +59,7 @@ func main() {
 	for i, stmt := range simulateInput.Statement {
 		normalized, err := stmt.Normalize()
 		if err != nil {
-			logFatal(ctx, "Error on simulate", "index", i, "error", err)
+			logFatal(ctx, "Error when normalizing input", "index", i, "error", err)
 		}
 		normalizedStmts[i] = normalized
 	}

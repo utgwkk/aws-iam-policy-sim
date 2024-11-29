@@ -111,6 +111,30 @@ func main() {
 		policyDocuments = append(policyDocuments, unescaped)
 	}
 
+	for policyName, err := range listRolePolicyNames(ctx, iamClient, targetRoleName) {
+		if err != nil {
+			slog.ErrorContext(ctx, "Failed to list attached role policies", "error", err)
+			os.Exit(1)
+		}
+
+		slog.DebugContext(ctx, "Invoking GetPolicy", "policyName", policyName)
+		policy, err := iamClient.GetRolePolicy(ctx, &iam.GetRolePolicyInput{
+			PolicyName: aws.String(policyName),
+			RoleName:   aws.String(targetRoleName),
+		})
+		if err != nil {
+			slog.ErrorContext(ctx, "Failed to get policy", "error", err)
+			os.Exit(1)
+		}
+
+		unescaped, err := url.QueryUnescape(*policy.PolicyDocument)
+		if err != nil {
+			slog.ErrorContext(ctx, "Failed to unescape policy document", "error", err)
+			os.Exit(1)
+		}
+		policyDocuments = append(policyDocuments, unescaped)
+	}
+
 	if len(policyDocuments) == 0 {
 		slog.ErrorContext(ctx, "No policy is attached")
 		os.Exit(1)
@@ -172,6 +196,35 @@ func listAttachedRolePolicies(ctx context.Context, iamClient *iam.Client, roleNa
 			for _, policy := range res.AttachedPolicies {
 				slog.DebugContext(ctx, "listRolePolices loop", "policyName", *policy.PolicyName)
 				if !yield(policy, nil) {
+					return
+				}
+			}
+			if !res.IsTruncated {
+				return
+			}
+			marker = res.Marker
+		}
+	}
+}
+
+func listRolePolicyNames(ctx context.Context, iamClient *iam.Client, roleName string) iter.Seq2[string, error] {
+	return func(yield func(string, error) bool) {
+		var marker *string
+		for {
+			slog.DebugContext(ctx, "Invoking ListRolePolicies", "roleName", roleName)
+			res, err := iamClient.ListRolePolicies(ctx, &iam.ListRolePoliciesInput{
+				RoleName: aws.String(roleName),
+				Marker:   marker,
+			})
+			if err != nil {
+				yield("", err)
+				return
+			}
+			slog.DebugContext(ctx, "ListAttachedRolePolicies", "numPolicyNames", len(res.PolicyNames))
+
+			for _, policyName := range res.PolicyNames {
+				slog.DebugContext(ctx, "listRolePolices loop", "policyName", policyName)
+				if !yield(policyName, nil) {
 					return
 				}
 			}

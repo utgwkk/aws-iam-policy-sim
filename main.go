@@ -111,6 +111,11 @@ func main() {
 		policyDocuments = append(policyDocuments, unescaped)
 	}
 
+	if len(policyDocuments) == 0 {
+		slog.ErrorContext(ctx, "No policy is attached")
+		os.Exit(1)
+	}
+
 	anyFailed := false
 	for _, simulate := range normalizedSimulates {
 		for _, action := range simulate.Actions {

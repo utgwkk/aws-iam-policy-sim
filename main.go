@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"iter"
 	"log/slog"
@@ -13,16 +14,25 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/aws/aws-sdk-go-v2/service/iam/types"
+	"github.com/utgwkk/aws-iam-policy-sim/input"
 )
 
 var (
 	argsTargetRoleName = flag.String("role-name", "", "IAM role name to simulate")
+
+	argsDebug = flag.String("debug", "", "Enable debug output if any non-empty string is passed")
 )
 
 func main() {
 	flag.Parse()
+
+	logLevel := slog.LevelInfo
+	if *argsDebug != "" {
+		logLevel = slog.LevelDebug
+	}
+
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
-		Level: slog.LevelDebug,
+		Level: logLevel,
 	})))
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
@@ -38,6 +48,27 @@ func main() {
 	if err != nil {
 		slog.ErrorContext(ctx, "Failed to load default AWS config", "error", err)
 		os.Exit(1)
+	}
+
+	simulateInput := &input.Input{}
+	if err := json.NewDecoder(os.Stdin).Decode(&simulateInput); err != nil {
+		slog.ErrorContext(ctx, "Failed to read input from STDIN", "error", err)
+		os.Exit(1)
+	}
+	slog.DebugContext(ctx, "input decoded", "numSimulates", len(simulateInput.Simulates))
+	if len(simulateInput.Simulates) == 0 {
+		slog.ErrorContext(ctx, "No simulates specified")
+		os.Exit(1)
+	}
+
+	normalizedSimulates := make([]*input.NormalizedSimulate, len(simulateInput.Simulates))
+	for i, simulate := range simulateInput.Simulates {
+		normalized, err := simulate.Normalize()
+		if err != nil {
+			slog.ErrorContext(ctx, "Error on simulate", "index", i, "error", err)
+			os.Exit(1)
+		}
+		normalizedSimulates[i] = normalized
 	}
 
 	iamClient := iam.NewFromConfig(awscfg)
@@ -62,7 +93,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		slog.DebugContext(ctx, "Invoking GetPolicyVersion", "policyName", listedPolicy, "targetRoleName", targetRoleName)
+		slog.DebugContext(ctx, "Invoking GetPolicyVersion", "policyName", *listedPolicy.PolicyName, "targetRoleName", targetRoleName)
 		defaultVersionPolicy, err := iamClient.GetPolicyVersion(ctx, &iam.GetPolicyVersionInput{
 			PolicyArn: policy.Policy.Arn,
 			VersionId: policy.Policy.DefaultVersionId,
@@ -80,8 +111,41 @@ func main() {
 		policyDocuments = append(policyDocuments, unescaped)
 	}
 
-	for _, doc := range policyDocuments {
-		slog.InfoContext(ctx, "policy documents", "doc", doc)
+	anyFailed := false
+	for _, simulate := range normalizedSimulates {
+		for _, action := range simulate.Actions {
+			for _, resource := range simulate.Resources {
+				slog.DebugContext(ctx, "Invoking SimulateCustomPolicy", "action", action, "resource", resource)
+				res, err := iamClient.SimulateCustomPolicy(ctx, &iam.SimulateCustomPolicyInput{
+					ActionNames:     []string{action},
+					PolicyInputList: policyDocuments,
+					ResourceArns:    []string{resource},
+				})
+				if err != nil {
+					slog.ErrorContext(ctx, "Failed to simulate custom policy", "action", action, "resource", resource, "error", err)
+					os.Exit(1)
+				}
+
+				decisionType := res.EvaluationResults[0].EvalDecision
+				switch decisionType {
+				case types.PolicyEvaluationDecisionTypeAllowed:
+					slog.InfoContext(ctx, "allowed", "action", action, "resource", resource)
+				case types.PolicyEvaluationDecisionTypeImplicitDeny:
+					slog.ErrorContext(ctx, "inplicit deny", "action", action, "resource", resource)
+					anyFailed = true
+				case types.PolicyEvaluationDecisionTypeExplicitDeny:
+					slog.ErrorContext(ctx, "explicit deny", "action", action, "resource", resource)
+					anyFailed = true
+				default:
+					slog.ErrorContext(ctx, "unexpected decision type", "action", action, "resource", resource, "decisionType", decisionType)
+					anyFailed = true
+				}
+			}
+		}
+	}
+
+	if anyFailed {
+		os.Exit(1)
 	}
 }
 

@@ -55,20 +55,20 @@ func main() {
 		slog.ErrorContext(ctx, "Failed to read input from STDIN", "error", err)
 		os.Exit(1)
 	}
-	slog.DebugContext(ctx, "Input decoded", "numSimulates", len(simulateInput.Simulates))
-	if len(simulateInput.Simulates) == 0 {
+	slog.DebugContext(ctx, "Input decoded", "numSimulates", len(simulateInput.Statement))
+	if len(simulateInput.Statement) == 0 {
 		slog.ErrorContext(ctx, "No simulates specified")
 		os.Exit(1)
 	}
 
-	normalizedSimulates := make([]*input.NormalizedSimulate, len(simulateInput.Simulates))
-	for i, simulate := range simulateInput.Simulates {
-		normalized, err := simulate.Normalize()
+	normalizedStmts := make([]*input.NormalizedStatement, len(simulateInput.Statement))
+	for i, stmt := range simulateInput.Statement {
+		normalized, err := stmt.Normalize()
 		if err != nil {
 			slog.ErrorContext(ctx, "Error on simulate", "index", i, "error", err)
 			os.Exit(1)
 		}
-		normalizedSimulates[i] = normalized
+		normalizedStmts[i] = normalized
 	}
 
 	iamClient := iam.NewFromConfig(awscfg)
@@ -141,9 +141,9 @@ func main() {
 	}
 
 	anyFailed := false
-	for _, simulate := range normalizedSimulates {
-		for _, action := range simulate.Actions {
-			for _, resource := range simulate.Resources {
+	for _, stmt := range normalizedStmts {
+		for _, action := range stmt.Actions {
+			for _, resource := range stmt.Resources {
 				slog.DebugContext(ctx, "Invoking SimulateCustomPolicy", "action", action, "resource", resource)
 				res, err := iamClient.SimulateCustomPolicy(ctx, &iam.SimulateCustomPolicyInput{
 					ActionNames:     []string{action},

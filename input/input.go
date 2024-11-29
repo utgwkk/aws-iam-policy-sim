@@ -5,22 +5,22 @@ import (
 )
 
 type Input struct {
-	Simulates []Simulate `json:"simulates"`
+	Statement []Statement
 }
 
-type Simulate struct {
-	Action StringOrStringList `json:"action"`
+type Statement struct {
+	Action StringOrStringList
 
-	Resource StringOrStringList `json:"resource"`
+	Resource StringOrStringList
 }
 
-type NormalizedSimulate struct {
+type NormalizedStatement struct {
 	Actions []string
 
 	Resources []string
 }
 
-func (s *Simulate) Normalize() (*NormalizedSimulate, error) {
+func (s *Statement) Normalize() (*NormalizedStatement, error) {
 	if len(s.Action) == 0 {
 		return nil, errors.New("action must not be empty")
 	}
@@ -28,7 +28,7 @@ func (s *Simulate) Normalize() (*NormalizedSimulate, error) {
 		return nil, errors.New("resource must not be empty")
 	}
 
-	return &NormalizedSimulate{
+	return &NormalizedStatement{
 		Actions:   []string(s.Action),
 		Resources: []string(s.Resource),
 	}, nil

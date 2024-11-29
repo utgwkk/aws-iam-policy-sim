@@ -39,48 +39,41 @@ func main() {
 
 	targetRoleName := *argsTargetRoleName
 	if targetRoleName == "" {
-		slog.ErrorContext(ctx, "-role-name is required")
-		os.Exit(1)
+		logFatal(ctx, "-role-name is required")
 	}
 
 	awscfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		slog.ErrorContext(ctx, "Failed to load default AWS config", "error", err)
-		os.Exit(1)
+		logFatal(ctx, "Failed to load default AWS config", "error", err)
 	}
 
 	simulateInput := &input.Input{}
 	if err := json.NewDecoder(os.Stdin).Decode(&simulateInput); err != nil {
-		slog.ErrorContext(ctx, "Failed to read input from STDIN", "error", err)
-		os.Exit(1)
+		logFatal(ctx, "Failed to read input from STDIN", "error", err)
 	}
 	slog.DebugContext(ctx, "Input decoded", "numSimulates", len(simulateInput.Statement))
 	if len(simulateInput.Statement) == 0 {
-		slog.ErrorContext(ctx, "No simulates specified")
-		os.Exit(1)
+		logFatal(ctx, "No simulates specified")
 	}
 
 	normalizedStmts := make([]*input.NormalizedStatement, len(simulateInput.Statement))
 	for i, stmt := range simulateInput.Statement {
 		normalized, err := stmt.Normalize()
 		if err != nil {
-			slog.ErrorContext(ctx, "Error on simulate", "index", i, "error", err)
-			os.Exit(1)
+			logFatal(ctx, "Error on simulate", "index", i, "error", err)
 		}
 		normalizedStmts[i] = normalized
 	}
 
 	iamClient := iam.NewFromConfig(awscfg)
 	if err != nil {
-		slog.ErrorContext(ctx, "Failed to get role", "error", err)
-		os.Exit(1)
+		logFatal(ctx, "Failed to get role", "error", err)
 	}
 
 	var policyDocuments []string
 	for listedPolicy, err := range listAttachedRolePolicies(ctx, iamClient, targetRoleName) {
 		if err != nil {
-			slog.ErrorContext(ctx, "Failed to list attached role policies", "error", err)
-			os.Exit(1)
+			logFatal(ctx, "Failed to list attached role policies", "error", err)
 		}
 
 		slog.DebugContext(ctx, "Invoking GetPolicy", "policyArn", *listedPolicy.PolicyArn)
@@ -88,8 +81,7 @@ func main() {
 			PolicyArn: listedPolicy.PolicyArn,
 		})
 		if err != nil {
-			slog.ErrorContext(ctx, "Failed to get policy", "error", err)
-			os.Exit(1)
+			logFatal(ctx, "Failed to get policy", "error", err)
 		}
 
 		slog.DebugContext(ctx, "Invoking GetPolicyVersion", "policyName", *listedPolicy.PolicyName, "targetRoleName", targetRoleName)
@@ -98,22 +90,19 @@ func main() {
 			VersionId: policy.Policy.DefaultVersionId,
 		})
 		if err != nil {
-			slog.ErrorContext(ctx, "Failed to get role policy", "error", err)
-			os.Exit(1)
+			logFatal(ctx, "Failed to get role policy", "error", err)
 		}
 
 		unescaped, err := url.QueryUnescape(*defaultVersionPolicy.PolicyVersion.Document)
 		if err != nil {
-			slog.ErrorContext(ctx, "Failed to unescape policy document", "error", err)
-			os.Exit(1)
+			logFatal(ctx, "Failed to unescape policy document", "error", err)
 		}
 		policyDocuments = append(policyDocuments, unescaped)
 	}
 
 	for policyName, err := range listRolePolicyNames(ctx, iamClient, targetRoleName) {
 		if err != nil {
-			slog.ErrorContext(ctx, "Failed to list attached role policies", "error", err)
-			os.Exit(1)
+			logFatal(ctx, "Failed to list attached role policies", "error", err)
 		}
 
 		slog.DebugContext(ctx, "Invoking GetRolePolicy", "policyName", policyName)
@@ -122,21 +111,18 @@ func main() {
 			RoleName:   aws.String(targetRoleName),
 		})
 		if err != nil {
-			slog.ErrorContext(ctx, "Failed to get policy", "error", err)
-			os.Exit(1)
+			logFatal(ctx, "Failed to get policy", "error", err)
 		}
 
 		unescaped, err := url.QueryUnescape(*policy.PolicyDocument)
 		if err != nil {
-			slog.ErrorContext(ctx, "Failed to unescape policy document", "error", err)
-			os.Exit(1)
+			logFatal(ctx, "Failed to unescape policy document", "error", err)
 		}
 		policyDocuments = append(policyDocuments, unescaped)
 	}
 
 	if len(policyDocuments) == 0 {
-		slog.ErrorContext(ctx, "No policy is attached")
-		os.Exit(1)
+		logFatal(ctx, "No policy is attached")
 	}
 
 	anyFailed := false
@@ -150,8 +136,7 @@ func main() {
 					ResourceArns:    []string{resource},
 				})
 				if err != nil {
-					slog.ErrorContext(ctx, "Failed to simulate custom policy", "action", action, "resource", resource, "error", err)
-					os.Exit(1)
+					logFatal(ctx, "Failed to simulate custom policy", "action", action, "resource", resource, "error", err)
 				}
 
 				decisionType := res.EvaluationResults[0].EvalDecision

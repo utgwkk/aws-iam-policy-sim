@@ -8,13 +8,14 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/aws/aws-sdk-go-v2/service/iam/types"
+	"github.com/utgwkk/aws-iam-policy-sim/slogx"
 )
 
 func listAttachedRolePolicies(ctx context.Context, iamClient *iam.Client, roleName string) iter.Seq2[types.AttachedPolicy, error] {
 	return func(yield func(types.AttachedPolicy, error) bool) {
 		var marker *string
 		for {
-			slog.DebugContext(ctx, "Invoking ListAttachedRolePolicies", "roleName", roleName)
+			slog.DebugContext(ctx, "Invoking ListAttachedRolePolicies", slog.String("roleName", roleName), slogx.StringPtr("marker", marker))
 			res, err := iamClient.ListAttachedRolePolicies(ctx, &iam.ListAttachedRolePoliciesInput{
 				RoleName: aws.String(roleName),
 				Marker:   marker,
@@ -43,7 +44,7 @@ func listRolePolicyNames(ctx context.Context, iamClient *iam.Client, roleName st
 	return func(yield func(string, error) bool) {
 		var marker *string
 		for {
-			slog.DebugContext(ctx, "Invoking ListRolePolicies", "roleName", roleName)
+			slog.DebugContext(ctx, "Invoking ListRolePolicies", slog.String("roleName", roleName), slogx.StringPtr("marker", marker))
 			res, err := iamClient.ListRolePolicies(ctx, &iam.ListRolePoliciesInput{
 				RoleName: aws.String(roleName),
 				Marker:   marker,

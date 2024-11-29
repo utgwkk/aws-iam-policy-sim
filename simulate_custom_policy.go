@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/aws/aws-sdk-go-v2/service/iam/types"
 	"github.com/utgwkk/aws-iam-policy-sim/input"
+	"github.com/utgwkk/aws-iam-policy-sim/slogx"
 )
 
 func simulateCustomPolicies(ctx context.Context, iamClient *iam.Client, normalizedStmts []*input.NormalizedStatement, policyDocuments []string) iter.Seq2[types.EvaluationResult, error] {
@@ -30,7 +31,7 @@ func simulateCustomPolicy(ctx context.Context, iamClient *iam.Client, policyDocu
 	return func(yield func(types.EvaluationResult, error) bool) {
 		var marker *string
 		for {
-			slog.DebugContext(ctx, "Invoking SimulateCustomPolicy", "action", action, "resource", resource)
+			slog.DebugContext(ctx, "Invoking SimulateCustomPolicy", slog.String("action", action), slog.String("resource", resource), slogx.StringPtr("marker", marker))
 			res, err := iamClient.SimulateCustomPolicy(ctx, &iam.SimulateCustomPolicyInput{
 				ActionNames:     []string{action},
 				PolicyInputList: policyDocuments,

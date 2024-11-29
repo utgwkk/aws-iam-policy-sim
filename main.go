@@ -55,7 +55,7 @@ func main() {
 		slog.ErrorContext(ctx, "Failed to read input from STDIN", "error", err)
 		os.Exit(1)
 	}
-	slog.DebugContext(ctx, "input decoded", "numSimulates", len(simulateInput.Simulates))
+	slog.DebugContext(ctx, "Input decoded", "numSimulates", len(simulateInput.Simulates))
 	if len(simulateInput.Simulates) == 0 {
 		slog.ErrorContext(ctx, "No simulates specified")
 		os.Exit(1)
@@ -158,15 +158,15 @@ func main() {
 				decisionType := res.EvaluationResults[0].EvalDecision
 				switch decisionType {
 				case types.PolicyEvaluationDecisionTypeAllowed:
-					slog.InfoContext(ctx, "allowed", "action", action, "resource", resource)
+					slog.InfoContext(ctx, "Allowed", "action", action, "resource", resource)
 				case types.PolicyEvaluationDecisionTypeImplicitDeny:
-					slog.ErrorContext(ctx, "implicit deny", "action", action, "resource", resource)
+					slog.ErrorContext(ctx, "Implicit deny", "action", action, "resource", resource)
 					anyFailed = true
 				case types.PolicyEvaluationDecisionTypeExplicitDeny:
-					slog.ErrorContext(ctx, "explicit deny", "action", action, "resource", resource)
+					slog.ErrorContext(ctx, "Explicit deny", "action", action, "resource", resource)
 					anyFailed = true
 				default:
-					slog.ErrorContext(ctx, "unexpected decision type", "action", action, "resource", resource, "decisionType", decisionType)
+					slog.ErrorContext(ctx, "Unexpected decision type", "action", action, "resource", resource, "decisionType", decisionType)
 					anyFailed = true
 				}
 			}

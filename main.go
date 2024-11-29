@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"flag"
 	"log/slog"
-	"net/url"
 	"os"
 	"os/signal"
 
@@ -93,7 +92,7 @@ func main() {
 			logFatal(ctx, "Failed to get role policy", "error", err)
 		}
 
-		unescaped, err := url.QueryUnescape(*defaultVersionPolicy.PolicyVersion.Document)
+		unescaped, err := unescapePolicyDocument(*defaultVersionPolicy.PolicyVersion.Document)
 		if err != nil {
 			logFatal(ctx, "Failed to unescape policy document", "error", err)
 		}
@@ -114,7 +113,7 @@ func main() {
 			logFatal(ctx, "Failed to get policy", "error", err)
 		}
 
-		unescaped, err := url.QueryUnescape(*policy.PolicyDocument)
+		unescaped, err := unescapePolicyDocument(*policy.PolicyDocument)
 		if err != nil {
 			logFatal(ctx, "Failed to unescape policy document", "error", err)
 		}

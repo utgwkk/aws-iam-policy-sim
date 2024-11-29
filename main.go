@@ -125,34 +125,25 @@ func main() {
 	}
 
 	anyFailed := false
-	for _, stmt := range normalizedStmts {
-		for _, action := range stmt.Actions {
-			for _, resource := range stmt.Resources {
-				slog.DebugContext(ctx, "Invoking SimulateCustomPolicy", "action", action, "resource", resource)
-				res, err := iamClient.SimulateCustomPolicy(ctx, &iam.SimulateCustomPolicyInput{
-					ActionNames:     []string{action},
-					PolicyInputList: policyDocuments,
-					ResourceArns:    []string{resource},
-				})
-				if err != nil {
-					logFatal(ctx, "Failed to simulate custom policy", "action", action, "resource", resource, "error", err)
-				}
+	for res, err := range simulateCustomPolicies(ctx, iamClient, normalizedStmts, policyDocuments) {
+		action, resource := *res.EvalActionName, *res.EvalResourceName
+		if err != nil {
+			logFatal(ctx, "Failed to simulate custom policy", "error", err)
+		}
 
-				decisionType := res.EvaluationResults[0].EvalDecision
-				switch decisionType {
-				case types.PolicyEvaluationDecisionTypeAllowed:
-					slog.InfoContext(ctx, "Allowed", "action", action, "resource", resource)
-				case types.PolicyEvaluationDecisionTypeImplicitDeny:
-					slog.ErrorContext(ctx, "Implicit deny", "action", action, "resource", resource)
-					anyFailed = true
-				case types.PolicyEvaluationDecisionTypeExplicitDeny:
-					slog.ErrorContext(ctx, "Explicit deny", "action", action, "resource", resource)
-					anyFailed = true
-				default:
-					slog.ErrorContext(ctx, "Unexpected decision type", "action", action, "resource", resource, "decisionType", decisionType)
-					anyFailed = true
-				}
-			}
+		decisionType := res.EvalDecision
+		switch decisionType {
+		case types.PolicyEvaluationDecisionTypeAllowed:
+			slog.InfoContext(ctx, "Allowed", "action", action, "resource", resource)
+		case types.PolicyEvaluationDecisionTypeImplicitDeny:
+			slog.ErrorContext(ctx, "Implicit deny", "action", action, "resource", resource)
+			anyFailed = true
+		case types.PolicyEvaluationDecisionTypeExplicitDeny:
+			slog.ErrorContext(ctx, "Explicit deny", "action", action, "resource", resource)
+			anyFailed = true
+		default:
+			slog.ErrorContext(ctx, "Unexpected decision type", "action", action, "resource", resource, "decisionType", decisionType)
+			anyFailed = true
 		}
 	}
 

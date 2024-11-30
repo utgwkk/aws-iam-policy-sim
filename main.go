@@ -69,9 +69,6 @@ func main() {
 	}
 
 	iamClient := iam.NewFromConfig(awscfg)
-	if err != nil {
-		slogx.FatalContext(ctx, "Failed to get role", "error", err)
-	}
 
 	policyDocuments, err := listRolePolicyDocuments(ctx, iamClient, targetRoleName)
 	if err != nil {

@@ -19,7 +19,7 @@ func listRolePolicyDocuments(ctx context.Context, iamClient *iam.Client, roleNam
 
 	for listedPolicy, err := range iterateRoleAttachedManagedPolicies(ctx, iamClient, roleName) {
 		if err != nil {
-			return nil, fmt.Errorf("failed to list attached role policies: %w", err)
+			return nil, fmt.Errorf("failed to iterateRoleAttachedManagedPolicies: %w", err)
 		}
 
 		slog.DebugContext(ctx, "Invoking GetPolicy", slog.String("policyArn", *listedPolicy.PolicyArn))
@@ -48,7 +48,7 @@ func listRolePolicyDocuments(ctx context.Context, iamClient *iam.Client, roleNam
 
 	for policyName, err := range iterateRoleInlinePolicyNames(ctx, iamClient, roleName) {
 		if err != nil {
-			return nil, fmt.Errorf("failed to list attached role policies: %w", err)
+			return nil, fmt.Errorf("failed to iterateRoleInlinePolicyNames: %w", err)
 		}
 
 		slog.DebugContext(ctx, "Invoking GetRolePolicy", slog.String("policyName", policyName))
@@ -86,7 +86,7 @@ func iterateRoleAttachedManagedPolicies(ctx context.Context, iamClient *iam.Clie
 			slog.DebugContext(ctx, "ListAttachedRolePolicies", slog.Int("numAttachedPolicies", len(res.AttachedPolicies)))
 
 			for _, policy := range res.AttachedPolicies {
-				slog.DebugContext(ctx, "listRolePolices loop", slog.String("policyName", *policy.PolicyName))
+				slog.DebugContext(ctx, "iterateRoleAttachedManagedPolicies loop", slog.String("policyName", *policy.PolicyName))
 				if !yield(policy, nil) {
 					return
 				}
@@ -115,7 +115,7 @@ func iterateRoleInlinePolicyNames(ctx context.Context, iamClient *iam.Client, ro
 			slog.DebugContext(ctx, "ListRolePolicies", slog.Int("numPolicyNames", len(res.PolicyNames)))
 
 			for _, policyName := range res.PolicyNames {
-				slog.DebugContext(ctx, "listRolePolicyNames loop", slog.String("policyName", policyName))
+				slog.DebugContext(ctx, "iterateRoleInlinePolicyNames loop", slog.String("policyName", policyName))
 				if !yield(policyName, nil) {
 					return
 				}

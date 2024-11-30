@@ -49,6 +49,7 @@ func main() {
 	if err != nil {
 		slogx.FatalContext(ctx, "Failed to load default AWS config", "error", err)
 	}
+	iamClient := iam.NewFromConfig(awscfg)
 
 	simulateInput := &input.Input{}
 	if err := json.NewDecoder(os.Stdin).Decode(&simulateInput); err != nil {
@@ -67,8 +68,6 @@ func main() {
 		}
 		normalizedStmts[i] = normalized
 	}
-
-	iamClient := iam.NewFromConfig(awscfg)
 
 	policyDocuments, err := listRolePolicyDocuments(ctx, iamClient, targetRoleName)
 	if err != nil {

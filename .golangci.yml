@@ -1,0 +1,25 @@
+linters:
+  enable-all: true
+  disable:
+    - cyclop
+    - depguard
+    - err113
+    - exhaustruct
+    - exportloopref # deprecated
+    - funlen
+    - gochecknoglobals
+    - gocritic
+    - lll
+    - mnd
+    - musttag
+    - nlreturn
+    - testpackage
+    - varnamelen
+    - wsl
+linters-settings:
+  sloglint:
+    kv-only: false
+    attrs-only: true
+    context: all
+    static-msg: true
+    key-naming-case: camel

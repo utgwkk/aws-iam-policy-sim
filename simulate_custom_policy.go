@@ -7,8 +7,8 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/aws/aws-sdk-go-v2/service/iam/types"
-	"github.com/utgwkk/aws-iam-policy-sim/input"
-	"github.com/utgwkk/aws-iam-policy-sim/slogx"
+	"github.com/utgwkk/aws-iam-policy-sim/internal/input"
+	"github.com/utgwkk/aws-iam-policy-sim/internal/slogx"
 )
 
 func simulateCustomPolicies(ctx context.Context, iamClient *iam.Client, normalizedStmts []*input.NormalizedStatement, policyDocuments []string) iter.Seq2[types.EvaluationResult, error] {

@@ -9,7 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/aws/aws-sdk-go-v2/service/iam/types"
-	"github.com/utgwkk/aws-iam-policy-sim/slogx"
+	"github.com/utgwkk/aws-iam-policy-sim/internal/slogx"
 )
 
 func listRolePolicyDocuments(ctx context.Context, iamClient *iam.Client, roleName string) ([]string, error) {

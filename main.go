@@ -13,8 +13,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/aws/aws-sdk-go-v2/service/iam/types"
 	"github.com/lmittmann/tint"
-	"github.com/utgwkk/aws-iam-policy-sim/input"
-	"github.com/utgwkk/aws-iam-policy-sim/slogx"
+	"github.com/utgwkk/aws-iam-policy-sim/internal/input"
+	"github.com/utgwkk/aws-iam-policy-sim/internal/slogx"
 )
 
 var (

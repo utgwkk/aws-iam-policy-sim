@@ -6,6 +6,16 @@ on:
   pull_request:
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - run: go get -v ./...
+      - name: build
+        run: go build
   test:
     runs-on: ubuntu-latest
     steps:

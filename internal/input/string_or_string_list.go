@@ -13,12 +13,12 @@ func (s *StringOrStringList) UnmarshalJSON(b []byte) error {
 	switch {
 	case bytes.HasPrefix(b, []byte("[")):
 		if err := json.Unmarshal(b, &xs); err != nil {
-			return err
+			return fmt.Errorf("json.Unmarshal: %w", err)
 		}
 	case bytes.HasPrefix(b, []byte(`"`)):
 		var t string
 		if err := json.Unmarshal(b, &t); err != nil {
-			return err
+			return fmt.Errorf("json.Unmarshal: %w", err)
 		}
 		xs = []string{t}
 	default:

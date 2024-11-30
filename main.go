@@ -9,7 +9,6 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/aws/aws-sdk-go-v2/service/iam/types"
@@ -73,55 +72,9 @@ func main() {
 		logFatal(ctx, "Failed to get role", "error", err)
 	}
 
-	var policyDocuments []string
-	for listedPolicy, err := range listAttachedRolePolicies(ctx, iamClient, targetRoleName) {
-		if err != nil {
-			logFatal(ctx, "Failed to list attached role policies", "error", err)
-		}
-
-		slog.DebugContext(ctx, "Invoking GetPolicy", "policyArn", *listedPolicy.PolicyArn)
-		policy, err := iamClient.GetPolicy(ctx, &iam.GetPolicyInput{
-			PolicyArn: listedPolicy.PolicyArn,
-		})
-		if err != nil {
-			logFatal(ctx, "Failed to get policy", "error", err)
-		}
-
-		slog.DebugContext(ctx, "Invoking GetPolicyVersion", "policyName", *listedPolicy.PolicyName, "targetRoleName", targetRoleName)
-		defaultVersionPolicy, err := iamClient.GetPolicyVersion(ctx, &iam.GetPolicyVersionInput{
-			PolicyArn: policy.Policy.Arn,
-			VersionId: policy.Policy.DefaultVersionId,
-		})
-		if err != nil {
-			logFatal(ctx, "Failed to get role policy", "error", err)
-		}
-
-		unescaped, err := unescapePolicyDocument(*defaultVersionPolicy.PolicyVersion.Document)
-		if err != nil {
-			logFatal(ctx, "Failed to unescape policy document", "error", err)
-		}
-		policyDocuments = append(policyDocuments, unescaped)
-	}
-
-	for policyName, err := range listRolePolicyNames(ctx, iamClient, targetRoleName) {
-		if err != nil {
-			logFatal(ctx, "Failed to list attached role policies", "error", err)
-		}
-
-		slog.DebugContext(ctx, "Invoking GetRolePolicy", "policyName", policyName)
-		policy, err := iamClient.GetRolePolicy(ctx, &iam.GetRolePolicyInput{
-			PolicyName: aws.String(policyName),
-			RoleName:   aws.String(targetRoleName),
-		})
-		if err != nil {
-			logFatal(ctx, "Failed to get policy", "error", err)
-		}
-
-		unescaped, err := unescapePolicyDocument(*policy.PolicyDocument)
-		if err != nil {
-			logFatal(ctx, "Failed to unescape policy document", "error", err)
-		}
-		policyDocuments = append(policyDocuments, unescaped)
+	policyDocuments, err := listRolePolicyDocuments(ctx, iamClient, targetRoleName)
+	if err != nil {
+		logFatal(ctx, "Failed to list role policy documents", "error", err)
 	}
 
 	if len(policyDocuments) == 0 {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"iter"
 	"log/slog"
 
@@ -10,6 +11,62 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/iam/types"
 	"github.com/utgwkk/aws-iam-policy-sim/slogx"
 )
+
+func listRolePolicyDocuments(ctx context.Context, iamClient *iam.Client, roleName string) ([]string, error) {
+	var policyDocuments []string
+
+	for listedPolicy, err := range listAttachedRolePolicies(ctx, iamClient, roleName) {
+		if err != nil {
+			return nil, fmt.Errorf("failed to list attached role policies: %w", err)
+		}
+
+		slog.DebugContext(ctx, "Invoking GetPolicy", "policyArn", *listedPolicy.PolicyArn)
+		policy, err := iamClient.GetPolicy(ctx, &iam.GetPolicyInput{
+			PolicyArn: listedPolicy.PolicyArn,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to get policy: %w", err)
+		}
+
+		slog.DebugContext(ctx, "Invoking GetPolicyVersion", "policyName", *listedPolicy.PolicyName, "targetRoleName", roleName)
+		defaultVersionPolicy, err := iamClient.GetPolicyVersion(ctx, &iam.GetPolicyVersionInput{
+			PolicyArn: policy.Policy.Arn,
+			VersionId: policy.Policy.DefaultVersionId,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to get role policy: %w", err)
+		}
+
+		unescaped, err := unescapePolicyDocument(*defaultVersionPolicy.PolicyVersion.Document)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unescape policy document: %w", err)
+		}
+		policyDocuments = append(policyDocuments, unescaped)
+	}
+
+	for policyName, err := range listRolePolicyNames(ctx, iamClient, roleName) {
+		if err != nil {
+			return nil, fmt.Errorf("failed to list attached role policies: %w", err)
+		}
+
+		slog.DebugContext(ctx, "Invoking GetRolePolicy", "policyName", policyName)
+		policy, err := iamClient.GetRolePolicy(ctx, &iam.GetRolePolicyInput{
+			PolicyName: aws.String(policyName),
+			RoleName:   aws.String(roleName),
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to get policy: %w", err)
+		}
+
+		unescaped, err := unescapePolicyDocument(*policy.PolicyDocument)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unescape policy document: %w", err)
+		}
+		policyDocuments = append(policyDocuments, unescaped)
+	}
+
+	return policyDocuments, nil
+}
 
 func listAttachedRolePolicies(ctx context.Context, iamClient *iam.Client, roleName string) iter.Seq2[types.AttachedPolicy, error] {
 	return func(yield func(types.AttachedPolicy, error) bool) {

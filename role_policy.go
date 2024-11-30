@@ -20,7 +20,7 @@ func listRolePolicyDocuments(ctx context.Context, iamClient *iam.Client, roleNam
 			return nil, fmt.Errorf("failed to list attached role policies: %w", err)
 		}
 
-		slog.DebugContext(ctx, "Invoking GetPolicy", "policyArn", *listedPolicy.PolicyArn)
+		slog.DebugContext(ctx, "Invoking GetPolicy", slog.String("policyArn", *listedPolicy.PolicyArn))
 		policy, err := iamClient.GetPolicy(ctx, &iam.GetPolicyInput{
 			PolicyArn: listedPolicy.PolicyArn,
 		})
@@ -28,7 +28,7 @@ func listRolePolicyDocuments(ctx context.Context, iamClient *iam.Client, roleNam
 			return nil, fmt.Errorf("failed to get policy: %w", err)
 		}
 
-		slog.DebugContext(ctx, "Invoking GetPolicyVersion", "policyName", *listedPolicy.PolicyName, "targetRoleName", roleName)
+		slog.DebugContext(ctx, "Invoking GetPolicyVersion", slog.String("policyName", *listedPolicy.PolicyName), slog.String("roleName", roleName))
 		defaultVersionPolicy, err := iamClient.GetPolicyVersion(ctx, &iam.GetPolicyVersionInput{
 			PolicyArn: policy.Policy.Arn,
 			VersionId: policy.Policy.DefaultVersionId,
@@ -49,7 +49,7 @@ func listRolePolicyDocuments(ctx context.Context, iamClient *iam.Client, roleNam
 			return nil, fmt.Errorf("failed to list attached role policies: %w", err)
 		}
 
-		slog.DebugContext(ctx, "Invoking GetRolePolicy", "policyName", policyName)
+		slog.DebugContext(ctx, "Invoking GetRolePolicy", slog.String("policyName", policyName))
 		policy, err := iamClient.GetRolePolicy(ctx, &iam.GetRolePolicyInput{
 			PolicyName: aws.String(policyName),
 			RoleName:   aws.String(roleName),
@@ -81,10 +81,10 @@ func listAttachedRolePolicies(ctx context.Context, iamClient *iam.Client, roleNa
 				yield(types.AttachedPolicy{}, err)
 				return
 			}
-			slog.DebugContext(ctx, "ListAttachedRolePolicies", "numAttachedPolicies", len(res.AttachedPolicies))
+			slog.DebugContext(ctx, "ListAttachedRolePolicies", slog.Int("numAttachedPolicies", len(res.AttachedPolicies)))
 
 			for _, policy := range res.AttachedPolicies {
-				slog.DebugContext(ctx, "listRolePolices loop", "policyName", *policy.PolicyName)
+				slog.DebugContext(ctx, "listRolePolices loop", slog.String("policyName", *policy.PolicyName))
 				if !yield(policy, nil) {
 					return
 				}
@@ -110,10 +110,10 @@ func listRolePolicyNames(ctx context.Context, iamClient *iam.Client, roleName st
 				yield("", err)
 				return
 			}
-			slog.DebugContext(ctx, "ListRolePolicies", "numPolicyNames", len(res.PolicyNames))
+			slog.DebugContext(ctx, "ListRolePolicies", slog.Int("numPolicyNames", len(res.PolicyNames)))
 
 			for _, policyName := range res.PolicyNames {
-				slog.DebugContext(ctx, "listRolePolicyNames loop", "policyName", policyName)
+				slog.DebugContext(ctx, "listRolePolicyNames loop", slog.String("policyName", policyName))
 				if !yield(policyName, nil) {
 					return
 				}

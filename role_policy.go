@@ -17,7 +17,7 @@ func listRolePolicyDocuments(ctx context.Context, iamClient *iam.Client, roleNam
 	// ref: https://docs.aws.amazon.com/singlesignon/latest/userguide/limits.html
 	policyDocuments := make([]string, 0, 20)
 
-	for listedPolicy, err := range listAttachedRolePolicies(ctx, iamClient, roleName) {
+	for listedPolicy, err := range iterateRoleAttachedManagedPolicies(ctx, iamClient, roleName) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to list attached role policies: %w", err)
 		}
@@ -46,7 +46,7 @@ func listRolePolicyDocuments(ctx context.Context, iamClient *iam.Client, roleNam
 		policyDocuments = append(policyDocuments, unescaped)
 	}
 
-	for policyName, err := range listRolePolicyNames(ctx, iamClient, roleName) {
+	for policyName, err := range iterateRoleInlinePolicyNames(ctx, iamClient, roleName) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to list attached role policies: %w", err)
 		}
@@ -70,7 +70,7 @@ func listRolePolicyDocuments(ctx context.Context, iamClient *iam.Client, roleNam
 	return policyDocuments, nil
 }
 
-func listAttachedRolePolicies(ctx context.Context, iamClient *iam.Client, roleName string) iter.Seq2[types.AttachedPolicy, error] {
+func iterateRoleAttachedManagedPolicies(ctx context.Context, iamClient *iam.Client, roleName string) iter.Seq2[types.AttachedPolicy, error] {
 	return func(yield func(types.AttachedPolicy, error) bool) {
 		var marker *string
 		for {
@@ -99,7 +99,7 @@ func listAttachedRolePolicies(ctx context.Context, iamClient *iam.Client, roleNa
 	}
 }
 
-func listRolePolicyNames(ctx context.Context, iamClient *iam.Client, roleName string) iter.Seq2[string, error] {
+func iterateRoleInlinePolicyNames(ctx context.Context, iamClient *iam.Client, roleName string) iter.Seq2[string, error] {
 	return func(yield func(string, error) bool) {
 		var marker *string
 		for {

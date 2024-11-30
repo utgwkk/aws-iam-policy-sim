@@ -52,6 +52,7 @@ func main() {
 	iamClient := iam.NewFromConfig(awscfg)
 
 	simulateInput := &input.Input{}
+	slog.DebugContext(ctx, "Reading input from STDIN")
 	if err := json.NewDecoder(os.Stdin).Decode(&simulateInput); err != nil {
 		slogx.FatalContext(ctx, "Failed to read input from STDIN", "error", err)
 	}

@@ -13,7 +13,9 @@ import (
 )
 
 func listRolePolicyDocuments(ctx context.Context, iamClient *iam.Client, roleName string) ([]string, error) {
-	var policyDocuments []string
+	// The maximum number of managed policies per IAM role is 20.
+	// ref: https://docs.aws.amazon.com/singlesignon/latest/userguide/limits.html
+	policyDocuments := make([]string, 0, 20)
 
 	for listedPolicy, err := range listAttachedRolePolicies(ctx, iamClient, roleName) {
 		if err != nil {

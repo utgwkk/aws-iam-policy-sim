@@ -29,21 +29,20 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
-	logLevel := slog.LevelInfo
+	logHandler := tint.NewHandler(os.Stderr, &tint.Options{
+		Level:      slog.LevelInfo,
+		TimeFormat: time.DateTime,
+	})
+	slog.SetDefault(slog.New(logHandler))
+
 	if *argsDebug != "" {
-		logLevel = slog.LevelDebug
+		slog.SetLogLoggerLevel(slog.LevelDebug)
 	}
 
 	targetRoleName := *argsTargetRoleName
 	if targetRoleName == "" {
 		slogx.FatalContext(ctx, "-role-name is required")
 	}
-
-	logHandler := tint.NewHandler(os.Stderr, &tint.Options{
-		Level:      logLevel,
-		TimeFormat: time.DateTime,
-	})
-	slog.SetDefault(slog.New(logHandler))
 
 	awscfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {

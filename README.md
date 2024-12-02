@@ -49,11 +49,11 @@ If your IAM role lacks some permission, `aws-iam-policy-sim` reports an error.
 
 ```console
 $ aws-iam-policy-sim --role-name example-role < path/to/statement.json
-2024-12-03 08:22:00 INF msg=Allowed action=s3:PutObject resource=arn:aws:s3:::example-bucket/*
-2024-12-03 08:22:00 INF msg=Allowed action=s3:GetObject resource=arn:aws:s3:::example-bucket/*
-2024-12-03 08:22:00 INF msg=Allowed action=s3:GetObjectTagging resource=arn:aws:s3:::example-bucket/*
-2024-12-03 08:22:00 INF msg=Allowed action=s3:DeleteObject resource=arn:aws:s3:::example-bucket/*
-2024-12-03 08:22:00 ERR msg="Implicit deny" action=s3:ListBucket resource=arn:aws:s3:::example-bucket
+2024-12-03 08:22:00 INF Allowed action=s3:PutObject resource=arn:aws:s3:::example-bucket/*
+2024-12-03 08:22:00 INF Allowed action=s3:GetObject resource=arn:aws:s3:::example-bucket/*
+2024-12-03 08:22:00 INF Allowed action=s3:GetObjectTagging resource=arn:aws:s3:::example-bucket/*
+2024-12-03 08:22:00 INF Allowed action=s3:DeleteObject resource=arn:aws:s3:::example-bucket/*
+2024-12-03 08:22:00 ERR Implicit deny action=s3:ListBucket resource=arn:aws:s3:::example-bucket
 ```
 
 ## Limitations

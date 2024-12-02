@@ -37,24 +37,23 @@ First, prepare JSON like below (NOTE: you can use IAM policy document JSON direc
 Then, execute `aws-iam-policy-sim`.
 
 ```console
-$ aws-iam-policy-sim -role-name example-role < path/to/statement.json
-time=2024-11-29T21:14:39.062+09:00 level=INFO msg=Allowed action=s3:PutObject resource=arn:aws:s3:::example-bucket/*
-time=2024-11-29T21:14:39.256+09:00 level=INFO msg=Allowed action=s3:GetObject resource=arn:aws:s3:::example-bucket/*
-time=2024-11-29T21:14:39.452+09:00 level=INFO msg=Allowed action=s3:GetObjectTagging resource=arn:aws:s3:::example-bucket/*
-time=2024-11-29T21:14:39.645+09:00 level=INFO msg=Allowed action=s3:DeleteObject resource=arn:aws:s3:::example-bucket/*
-time=2024-11-29T21:14:39.839+09:00 level=INFO msg=Allowed action=s3:ListBucket resource=arn:aws:s3:::example-bucket
+$ aws-iam-policy-sim --role-name example-role < path/to/statement.json
+2024-12-03 08:22:00 INF Allowed level=INFO msg=Allowed action=s3:PutObject resource=arn:aws:s3:::example-bucket/*
+2024-12-03 08:22:00 INF Allowed level=INFO msg=Allowed action=s3:GetObject resource=arn:aws:s3:::example-bucket/*
+2024-12-03 08:22:00 INF Allowed level=INFO msg=Allowed action=s3:GetObjectTagging resource=arn:aws:s3:::example-bucket/*
+2024-12-03 08:22:00 INF Allowed level=INFO msg=Allowed action=s3:DeleteObject resource=arn:aws:s3:::example-bucket/*
+2024-12-03 08:22:00 INF Allowed level=INFO msg=Allowed action=s3:ListBucket resource=arn:aws:s3:::example-bucket
 ```
 
 If your IAM role lacks some permission, `aws-iam-policy-sim` reports an error.
 
 ```console
-$ aws-iam-policy-sim -role-name example-role < path/to/statement.json
-time=2024-11-29T21:14:39.062+09:00 level=INFO msg=Allowed action=s3:PutObject resource=arn:aws:s3:::example-bucket/*
-time=2024-11-29T21:14:39.256+09:00 level=INFO msg=Allowed action=s3:GetObject resource=arn:aws:s3:::example-bucket/*
-time=2024-11-29T21:14:39.452+09:00 level=INFO msg=Allowed action=s3:GetObjectTagging resource=arn:aws:s3:::example-bucket/*
-time=2024-11-29T21:14:39.645+09:00 level=INFO msg=Allowed action=s3:DeleteObject resource=arn:aws:s3:::example-bucket/*
-time=2024-11-29T21:14:39.839+09:00 level=ERROR msg="Implicit deny" action=s3:ListBucket resource=arn:aws:s3:::example-bucket
-exit status 1
+$ aws-iam-policy-sim --role-name example-role < path/to/statement.json
+2024-12-03 08:22:00 INF msg=Allowed action=s3:PutObject resource=arn:aws:s3:::example-bucket/*
+2024-12-03 08:22:00 INF msg=Allowed action=s3:GetObject resource=arn:aws:s3:::example-bucket/*
+2024-12-03 08:22:00 INF msg=Allowed action=s3:GetObjectTagging resource=arn:aws:s3:::example-bucket/*
+2024-12-03 08:22:00 INF msg=Allowed action=s3:DeleteObject resource=arn:aws:s3:::example-bucket/*
+2024-12-03 08:22:00 ERR msg="Implicit deny" action=s3:ListBucket resource=arn:aws:s3:::example-bucket
 ```
 
 ## Limitations

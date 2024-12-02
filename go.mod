@@ -3,6 +3,7 @@ module github.com/utgwkk/aws-iam-policy-sim
 go 1.23.0
 
 require (
+	github.com/alecthomas/kong v1.5.1
 	github.com/aws/aws-sdk-go-v2 v1.32.5
 	github.com/aws/aws-sdk-go-v2/config v1.28.5
 	github.com/aws/aws-sdk-go-v2/service/iam v1.38.1

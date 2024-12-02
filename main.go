@@ -3,29 +3,22 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"flag"
 	"log/slog"
 	"os"
 	"os/signal"
 	"time"
 
+	"github.com/alecthomas/kong"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/aws/aws-sdk-go-v2/service/iam/types"
 	"github.com/lmittmann/tint"
+	"github.com/utgwkk/aws-iam-policy-sim/internal/cli"
 	"github.com/utgwkk/aws-iam-policy-sim/internal/input"
 	"github.com/utgwkk/aws-iam-policy-sim/internal/slogx"
 )
 
-var (
-	argsTargetRoleName = flag.String("role-name", "", "IAM role name to simulate")
-
-	argsDebug = flag.String("debug", "", "Enable debug output if any non-empty string is passed")
-)
-
 func main() {
-	flag.Parse()
-
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
@@ -35,14 +28,20 @@ func main() {
 	})
 	slog.SetDefault(slog.New(logHandler))
 
-	if *argsDebug != "" {
+	var cli cli.CLI
+	parser, err := kong.New(&cli)
+	if err != nil {
+		slogx.FatalContext(ctx, "failed to initialize kong parser", slog.Any("error", err))
+	}
+	if _, err := parser.Parse(os.Args[1:]); err != nil {
+		slogx.FatalContext(ctx, "failed to parse args", slog.Any("error", err))
+	}
+
+	if cli.Debug {
 		slog.SetLogLoggerLevel(slog.LevelDebug)
 	}
 
-	targetRoleName := *argsTargetRoleName
-	if targetRoleName == "" {
-		slogx.FatalContext(ctx, "-role-name is required")
-	}
+	targetRoleName := cli.RoleName
 
 	awscfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {

@@ -13,6 +13,7 @@ linters:
     - mnd
     - musttag
     - nlreturn
+    - tagalign
     - testpackage
     - varnamelen
     - wsl

@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.32.5
 	github.com/aws/aws-sdk-go-v2/config v1.28.5
 	github.com/aws/aws-sdk-go-v2/service/iam v1.38.1
-	github.com/lmittmann/tint v1.0.5
+	github.com/lmittmann/tint v1.1.3
 )
 
 require (

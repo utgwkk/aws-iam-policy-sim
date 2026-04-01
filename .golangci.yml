@@ -1,11 +1,10 @@
 linters:
-  enable-all: true
+  default: all
   disable:
     - cyclop
     - depguard
     - err113
     - exhaustruct
-    - exportloopref # deprecated
     - funlen
     - gochecknoglobals
     - gocritic
@@ -17,10 +16,10 @@ linters:
     - testpackage
     - varnamelen
     - wsl
-linters-settings:
-  sloglint:
-    kv-only: false
-    attrs-only: true
-    context: all
-    static-msg: true
-    key-naming-case: camel
+  settings:
+    sloglint:
+      kv-only: false
+      attrs-only: true
+      context: all
+      static-msg: true
+      key-naming-case: camel

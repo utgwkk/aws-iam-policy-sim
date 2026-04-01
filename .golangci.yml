@@ -20,7 +20,7 @@ linters:
   settings:
     sloglint:
       kv-only: false
-      attrs-only: true
+      attr-only: true
       context: all
       static-msg: true
       key-naming-case: camel

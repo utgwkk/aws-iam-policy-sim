@@ -13,10 +13,13 @@ linters:
     - mnd
     - musttag
     - nlreturn
+    - noinlineerr
+    - revive
     - tagalign
     - testpackage
     - varnamelen
     - wsl
+    - wsl_v5
   settings:
     sloglint:
       kv-only: false

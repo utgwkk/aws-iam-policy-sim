@@ -55,4 +55,4 @@ jobs:
       - name: Build
         run: go build -o aws-iam-policy-sim .
       - name: Run E2E test
-        run: ./aws-iam-policy-sim --role-name futosuto-deploy < e2e/statement.json
+        run: ./aws-iam-policy-sim --role-name example < e2e/statement.json

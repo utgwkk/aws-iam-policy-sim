@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.0.4](https://github.com/utgwkk/aws-iam-policy-sim/compare/v0.0.3...v0.0.4) - 2026-05-10
+- Bump actions/create-github-app-token from 2 to 3 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/29
+
 ## [v0.0.3](https://github.com/utgwkk/aws-iam-policy-sim/compare/v0.0.2...v0.0.3) - 2026-05-08
 - Add dependabot.yml by @utgwkk in https://github.com/utgwkk/aws-iam-policy-sim/pull/7
 - Bump actions/checkout from 4 to 6 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/11

@@ -1,5 +1,15 @@
 # Changelog
 
+## [v0.0.4](https://github.com/utgwkk/aws-iam-policy-sim/compare/v0.0.3...v0.0.4) - 2026-06-06
+
+- Bump actions/create-github-app-token from 2 to 3 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/29
+- Bump github.com/aws/aws-sdk-go-v2/config from 1.32.17 to 1.32.18 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/31
+- Bump github.com/aws/aws-sdk-go-v2/config from 1.32.18 to 1.32.20 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/35
+- Bump github.com/aws/aws-sdk-go-v2/service/iam from 1.53.10 to 1.54.0 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/37
+- Bump github.com/aws/aws-sdk-go-v2 from 1.41.9 to 1.41.12 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/41
+- Bump github.com/aws/aws-sdk-go-v2/service/iam from 1.54.0 to 1.54.3 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/42
+- Bump github.com/aws/aws-sdk-go-v2/config from 1.32.20 to 1.32.23 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/43
+
 ## [v0.0.3](https://github.com/utgwkk/aws-iam-policy-sim/compare/v0.0.2...v0.0.3) - 2026-05-08
 - Add dependabot.yml by @utgwkk in https://github.com/utgwkk/aws-iam-policy-sim/pull/7
 - Bump actions/checkout from 4 to 6 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/11

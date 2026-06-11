@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.0.5](https://github.com/utgwkk/aws-iam-policy-sim/compare/v0.0.4...v0.0.5) - 2026-06-11
+
+- Bump github.com/aws/aws-sdk-go-v2/config from 1.32.23 to 1.32.25 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/47
+- Bump github.com/aws/aws-sdk-go-v2/service/iam from 1.54.3 to 1.54.4 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/46
+
 ## [v0.0.4](https://github.com/utgwkk/aws-iam-policy-sim/compare/v0.0.3...v0.0.4) - 2026-06-06
 
 - Bump actions/create-github-app-token from 2 to 3 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/29

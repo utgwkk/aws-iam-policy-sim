@@ -9,6 +9,7 @@ import (
 	"github.com/utgwkk/aws-iam-policy-sim/internal/awsclient"
 	"github.com/utgwkk/aws-iam-policy-sim/internal/input"
 	"github.com/utgwkk/aws-iam-policy-sim/internal/slogx"
+	"github.com/utgwkk/slogerr"
 )
 
 type CLI struct {
@@ -26,13 +27,13 @@ func (c *CLI) Do(ctx context.Context) {
 
 	client, err := awsclient.New(ctx)
 	if err != nil {
-		slogx.FatalContext(ctx, "Failed to initialize client", slog.Any("error", err))
+		slogx.FatalContext(ctx, "Failed to initialize client", slogerr.Error(err))
 	}
 
 	simulateInput := &input.Input{}
 	slog.DebugContext(ctx, "Reading input from STDIN")
 	if err := json.NewDecoder(os.Stdin).Decode(&simulateInput); err != nil {
-		slogx.FatalContext(ctx, "Failed to read input from STDIN", slog.Any("error", err))
+		slogx.FatalContext(ctx, "Failed to read input from STDIN", slogerr.Error(err))
 	}
 	slog.DebugContext(ctx, "Input decoded", slog.Int("numSimulates", len(simulateInput.Statement)))
 	if len(simulateInput.Statement) == 0 {
@@ -43,14 +44,14 @@ func (c *CLI) Do(ctx context.Context) {
 	for i, stmt := range simulateInput.Statement {
 		normalized, err := stmt.Normalize()
 		if err != nil {
-			slogx.FatalContext(ctx, "Error when normalizing input", slog.Int("index", i), slog.Any("error", err))
+			slogx.FatalContext(ctx, "Error when normalizing input", slog.Int("index", i), slogerr.Error(err))
 		}
 		normalizedStmts[i] = normalized
 	}
 
 	anyFailed, err := client.SimulateIAMRolePolicies(ctx, targetRoleName, normalizedStmts)
 	if err != nil {
-		slogx.FatalContext(ctx, "Failed to simulate", slog.Any("error", err))
+		slogx.FatalContext(ctx, "Failed to simulate", slogerr.Error(err))
 	}
 
 	if anyFailed {

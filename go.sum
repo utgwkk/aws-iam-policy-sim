@@ -38,3 +38,5 @@ github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUq
 github.com/hexops/gotextdiff v1.0.3/go.mod h1:pSWU5MAI3yDq+fZBTazCSJysOMbxWL1BSow5/V2vxeg=
 github.com/lmittmann/tint v1.1.3 h1:Hv4EaHWXQr+GTFnOU4VKf8UvAtZgn0VuKT+G0wFlO3I=
 github.com/lmittmann/tint v1.1.3/go.mod h1:HIS3gSy7qNwGCj+5oRjAutErFBl4BzdQP6cJZ0NfMwE=
+github.com/utgwkk/slogerr v0.1.0 h1:/qXJtdVwIOWBI++iterrXLlPNyuIGouU2I5Rd7UNBnY=
+github.com/utgwkk/slogerr v0.1.0/go.mod h1:LSmKlY6Svk1WKlTk8z3pUsbqqPMNJEYiPOZ5NHVvDUA=

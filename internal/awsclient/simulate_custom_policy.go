@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/iam/types"
 	"github.com/utgwkk/aws-iam-policy-sim/internal/input"
 	"github.com/utgwkk/aws-iam-policy-sim/internal/slogx"
+	"github.com/utgwkk/slogerr"
 )
 
 func (c *Client) SimulateIAMRolePolicies(ctx context.Context, roleName string, normalizedStmts []*input.NormalizedStatement) (bool, error) {
@@ -27,7 +28,7 @@ func (c *Client) SimulateIAMRolePolicies(ctx context.Context, roleName string, n
 	for res, err := range c.simulateCustomPolicies(ctx, normalizedStmts, policyDocuments) {
 		action, resource := *res.EvalActionName, *res.EvalResourceName
 		if err != nil {
-			slogx.FatalContext(ctx, "Failed to simulate custom policy", slog.Any("error", err))
+			slogx.FatalContext(ctx, "Failed to simulate custom policy", slogerr.Error(err))
 		}
 
 		decisionType := res.EvalDecision

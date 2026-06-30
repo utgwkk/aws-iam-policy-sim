@@ -1,5 +1,14 @@
 # Changelog
 
+## [v0.0.6](https://github.com/utgwkk/aws-iam-policy-sim/compare/v0.0.5...v0.0.6) - 2026-06-30
+
+- Replace slog.Any error logging with slogerr.Error by @utgwkk in https://github.com/utgwkk/aws-iam-policy-sim/pull/49
+- Bump github.com/utgwkk/slogerr from 0.1.0 to 0.2.0 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/51
+- Bump github.com/aws/aws-sdk-go-v2/service/iam from 1.54.4 to 1.54.5 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/52
+- Bump actions/checkout from 6 to 7 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/53
+- Bump github.com/aws/aws-sdk-go-v2/config from 1.32.25 to 1.32.26 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/54
+- Bump github.com/aws/aws-sdk-go-v2/service/iam from 1.54.5 to 1.54.6 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/55
+
 ## [v0.0.5](https://github.com/utgwkk/aws-iam-policy-sim/compare/v0.0.4...v0.0.5) - 2026-06-11
 
 - Bump github.com/aws/aws-sdk-go-v2/config from 1.32.23 to 1.32.25 by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/47

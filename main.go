@@ -18,7 +18,7 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
-	logHandler := tint.NewHandler(os.Stderr, &tint.Options{
+	logHandler := tint.NewTextHandler(os.Stderr, &tint.Options{
 		Level:      slog.LevelInfo,
 		TimeFormat: time.DateTime,
 	})

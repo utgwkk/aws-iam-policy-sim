@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.32.30
 	github.com/aws/aws-sdk-go-v2/service/iam v1.55.1
 	github.com/lmittmann/tint v1.2.0
-	github.com/utgwkk/slogerr v0.2.0
+	github.com/utgwkk/slogerr v0.2.1
 )
 
 require (

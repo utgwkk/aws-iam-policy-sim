@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.14](https://github.com/utgwkk/aws-iam-policy-sim/compare/v0.0.13...v0.0.14) - 2026-07-30
+
+- Bump the aws-sdk-go-v2 group with 3 updates by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/77
+
 ## [v0.0.13](https://github.com/utgwkk/aws-iam-policy-sim/compare/v0.0.12...v0.0.13) - 2026-07-29
 
 - Bump the aws-sdk-go-v2 group with 3 updates by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/75

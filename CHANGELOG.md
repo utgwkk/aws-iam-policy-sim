@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.20](https://github.com/utgwkk/aws-iam-policy-sim/compare/v0.0.19...v0.0.20) - 2026-08-25
+
+- Bump the aws-sdk-go-v2 group with 3 updates by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/91
+
 ## [v0.0.19](https://github.com/utgwkk/aws-iam-policy-sim/compare/v0.0.18...v0.0.19) - 2026-08-22
 
 - Enable exhaustruct_v5 linter in golangci configuration by @utgwkk in https://github.com/utgwkk/aws-iam-policy-sim/pull/89

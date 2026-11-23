@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.30](https://github.com/utgwkk/aws-iam-policy-sim/compare/v0.0.29...v0.0.30) - 2026-11-23
+
+- build(deps): bump the aws-sdk-go-v2 group with 2 updates by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/115
+
 ## [v0.0.29](https://github.com/utgwkk/aws-iam-policy-sim/compare/v0.0.28...v0.0.29) - 2026-11-21
 
 - build(deps): bump the aws-sdk-go-v2 group across 1 directory with 3 updates by @dependabot[bot] in https://github.com/utgwkk/aws-iam-policy-sim/pull/113
